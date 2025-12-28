@@ -1,0 +1,57 @@
+name: vitals_to_measurements
+source:
+  section: VitalSigns
+  section_oid: "2.16.840.1.113883.10.20.22.2.4"
+  section_oid_entries_required: "2.16.840.1.113883.10.20.22.2.4.1"
+  entry_xpath: "entry/organizer/component/observation"
+  entry_type: VitalSign
+  conditions:
+    - type: domain_equals
+      value: Measurement
+target:
+  table: measurement
+  type_concept_id: 32817
+fields:
+  - target: measurement_concept_id
+    xpath: "code/@code"
+    vocab_xpath: "code/@codeSystem"
+    transform: vocab
+  - target: measurement_date
+    xpath: "effectiveTime/@value"
+    transform: date
+    optional: true
+  - target: measurement_datetime
+    xpath: "effectiveTime/@value"
+    transform: time_ptr
+    optional: true
+  - target: measurement_source_value
+    xpath: "code/@displayName"
+    fallback_xpath: "code/@code"
+    transform: string
+  - target: value_as_number
+    xpath: "value/@value"
+    transform: float
+    optional: true
+  - target: unit_source_value
+    xpath: "value/@unit"
+    transform: string
+    optional: true
+  - target: unit_concept_id
+    xpath: "value/@unit"
+    transform: unit
+    optional: true
+  - target: value_source_value
+    xpath: "value/@value"
+    transform: string
+    optional: true
+  - target: value_as_concept_id
+    xpath: "interpretationCode/@code"
+    vocab_xpath: "interpretationCode/@codeSystem"
+    transform: value_vocab
+    optional: true
+id_gen:
+  base_fields:
+    - Code.Code
+    - EffectiveTime
+    - Value
+  generator: measurement

@@ -1,0 +1,73 @@
+name: medications_to_drugs
+source:
+  section: Medications
+  section_oid: "2.16.840.1.113883.10.20.22.2.1"
+  section_oid_entries_required: "2.16.840.1.113883.10.20.22.2.1.1"
+  entry_xpath: "entry/substanceAdministration"
+  entry_type: Medication
+target:
+  table: drug_exposure
+  type_concept_id: 32817
+fields:
+  - target: drug_concept_id
+    xpath: "consumable/manufacturedProduct/manufacturedMaterial/code/@code"
+    vocab_xpath: "consumable/manufacturedProduct/manufacturedMaterial/code/@codeSystem"
+    transform: vocab
+  - target: drug_exposure_start_date
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: date
+    optional: true
+  - target: drug_exposure_start_datetime
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: time_ptr
+    optional: true
+  - target: drug_exposure_end_date
+    xpath: "effectiveTime/high/@value"
+    fallback_xpath: "effectiveTime/low/@value"
+    transform: date
+    optional: true
+  - target: drug_exposure_end_datetime
+    xpath: "effectiveTime/high/@value"
+    fallback_xpath: "effectiveTime/low/@value"
+    transform: time_ptr
+    optional: true
+  - target: drug_source_value
+    xpath: "consumable/manufacturedProduct/manufacturedMaterial/code/@displayName"
+    fallback_xpath: "consumable/manufacturedProduct/manufacturedMaterial/code/@code"
+    transform: string
+  - target: route_source_value
+    xpath: "routeCode/@displayName"
+    transform: string
+    optional: true
+  - target: route_concept_id
+    xpath: "routeCode/@code"
+    vocab_xpath: "routeCode/@codeSystem"
+    transform: route
+    optional: true
+  - target: quantity
+    xpath: "doseQuantity/@value"
+    transform: float
+    optional: true
+  - target: dose_unit_source_value
+    xpath: "doseQuantity/@unit"
+    transform: string
+    optional: true
+  - target: days_supply
+    xpath: "entryRelationship/supply/quantity/@value"
+    transform: int
+    optional: true
+  - target: refills
+    xpath: "repeatNumber/@value"
+    transform: int
+    optional: true
+  - target: sig
+    xpath: "text"
+    transform: string
+    optional: true
+id_gen:
+  base_fields:
+    - Code.Code
+    - EffectiveTime.Low
+  generator: drug

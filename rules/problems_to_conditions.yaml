@@ -1,0 +1,46 @@
+name: problems_to_conditions
+source:
+  section: Problems
+  section_oid: "2.16.840.1.113883.10.20.22.2.5"
+  section_oid_entries_required: "2.16.840.1.113883.10.20.22.2.5.1"
+  entry_xpath: "entry/act/entryRelationship/observation"
+  entry_type: Problem
+  conditions:
+    - type: domain_equals
+      value: Condition
+target:
+  table: condition_occurrence
+  type_concept_id: 32817
+fields:
+  - target: condition_concept_id
+    xpath: "value/@code"
+    fallback_xpath: "code/@code"
+    vocab_xpath: "value/@codeSystem"
+    transform: vocab
+  - target: condition_start_date
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: date
+    optional: true
+  - target: condition_start_datetime
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: time_ptr
+    optional: true
+  - target: condition_end_date
+    xpath: "effectiveTime/high/@value"
+    transform: time_ptr
+    optional: true
+  - target: condition_end_datetime
+    xpath: "effectiveTime/high/@value"
+    transform: time_ptr
+    optional: true
+  - target: condition_source_value
+    xpath: "value/@displayName"
+    fallback_xpath: "code/@displayName"
+    transform: string
+id_gen:
+  base_fields:
+    - Code.Code
+    - EffectiveTime.Low
+  generator: condition

@@ -1,0 +1,53 @@
+name: allergies_to_observations
+source:
+  section: Allergies
+  section_oid: "2.16.840.1.113883.10.20.22.2.6"
+  section_oid_entries_required: "2.16.840.1.113883.10.20.22.2.6.1"
+  entry_xpath: "entry/act/entryRelationship/observation"
+  entry_type: Allergy
+  conditions:
+    - type: domain_equals
+      value: Observation
+target:
+  table: observation
+  type_concept_id: 32817
+fields:
+  - target: observation_concept_id
+    xpath: "participant[@typeCode='CSM']/participantRole/playingEntity/code/@code"
+    fallback_xpath: "code/@code"
+    vocab_xpath: "participant[@typeCode='CSM']/participantRole/playingEntity/code/@codeSystem"
+    transform: vocab
+    optional: true
+  - target: observation_date
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: date
+    optional: true
+  - target: observation_datetime
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: time_ptr
+    optional: true
+  - target: observation_source_value
+    xpath: "participant[@typeCode='CSM']/participantRole/playingEntity/code/@displayName"
+    fallback_xpath: "code/@displayName"
+    transform: string
+    optional: true
+  - target: value_as_string
+    xpath: "entryRelationship/observation[code/@code='ASSERTION']/value/@displayName"
+    transform: string
+    optional: true
+  - target: value_as_concept_id
+    xpath: "entryRelationship/observation[code/@code='ASSERTION']/value/@code"
+    vocab_xpath: "entryRelationship/observation[code/@code='ASSERTION']/value/@codeSystem"
+    transform: value_vocab
+    optional: true
+  - target: qualifier_source_value
+    xpath: "entryRelationship/observation[code/@code='SEV']/value/@displayName"
+    transform: string
+    optional: true
+id_gen:
+  base_fields:
+    - Substance.Code
+    - EffectiveTime.Low
+  generator: observation

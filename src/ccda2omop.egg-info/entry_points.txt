@@ -1,0 +1,2 @@
+[console_scripts]
+ccda2omop = ccda2omop.cli:main

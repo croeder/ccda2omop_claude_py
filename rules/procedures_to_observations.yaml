@@ -1,0 +1,37 @@
+name: procedures_to_observations
+source:
+  section: Procedures
+  section_oid: "2.16.840.1.113883.10.20.22.2.7"
+  section_oid_entries_required: "2.16.840.1.113883.10.20.22.2.7.1"
+  entry_xpath: "entry/procedure"
+  entry_type: Procedure
+  conditions:
+    - type: domain_equals
+      value: Observation
+target:
+  table: observation
+  type_concept_id: 32817
+fields:
+  - target: observation_concept_id
+    xpath: "code/@code"
+    vocab_xpath: "code/@codeSystem"
+    transform: vocab
+  - target: observation_date
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: date
+    optional: true
+  - target: observation_datetime
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: time_ptr
+    optional: true
+  - target: observation_source_value
+    xpath: "code/@displayName"
+    fallback_xpath: "code/@code"
+    transform: string
+id_gen:
+  base_fields:
+    - Code.Code
+    - EffectiveTime.Low
+  generator: observation

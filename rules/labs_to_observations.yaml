@@ -1,0 +1,53 @@
+name: labs_to_observations
+source:
+  section: LabResults
+  section_oid: "2.16.840.1.113883.10.20.22.2.3"
+  section_oid_entries_required: "2.16.840.1.113883.10.20.22.2.3.1"
+  entry_xpath: "entry/organizer/component/observation"
+  entry_type: LabResult
+  conditions:
+    - type: domain_equals
+      value: Observation
+target:
+  table: observation
+  type_concept_id: 32817
+fields:
+  - target: observation_concept_id
+    xpath: "code/@code"
+    vocab_xpath: "code/@codeSystem"
+    transform: vocab
+  - target: observation_date
+    xpath: "effectiveTime/@value"
+    transform: date
+    optional: true
+  - target: observation_datetime
+    xpath: "effectiveTime/@value"
+    transform: time_ptr
+    optional: true
+  - target: observation_source_value
+    xpath: "code/@displayName"
+    fallback_xpath: "code/@code"
+    transform: string
+  - target: value_as_number
+    xpath: "value/@value"
+    transform: float
+    optional: true
+  - target: value_as_string
+    xpath: "value/@value"
+    transform: string
+    optional: true
+  - target: unit_source_value
+    xpath: "value/@unit"
+    transform: string
+    optional: true
+  - target: value_as_concept_id
+    xpath: "interpretationCode/@code"
+    vocab_xpath: "interpretationCode/@codeSystem"
+    transform: value_vocab
+    optional: true
+id_gen:
+  base_fields:
+    - Code.Code
+    - EffectiveTime
+    - Value
+  generator: observation

@@ -1,0 +1,46 @@
+name: devices_to_device_exposure
+source:
+  section: Devices
+  section_oid: "2.16.840.1.113883.10.20.22.2.23"
+  entry_xpath: "entry/supply"
+  entry_type: Device
+target:
+  table: device_exposure
+  type_concept_id: 32817
+fields:
+  - target: device_concept_id
+    xpath: "product/manufacturedProduct/manufacturedMaterial/code/@code"
+    fallback_xpath: "participant/participantRole/playingDevice/code/@code"
+    vocab_xpath: "product/manufacturedProduct/manufacturedMaterial/code/@codeSystem"
+    transform: vocab
+  - target: device_exposure_start_date
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: date
+    optional: true
+  - target: device_exposure_start_datetime
+    xpath: "effectiveTime/low/@value"
+    fallback_xpath: "effectiveTime/@value"
+    transform: time_ptr
+    optional: true
+  - target: device_exposure_end_date
+    xpath: "effectiveTime/high/@value"
+    transform: time_ptr
+    optional: true
+  - target: device_exposure_end_datetime
+    xpath: "effectiveTime/high/@value"
+    transform: time_ptr
+    optional: true
+  - target: device_source_value
+    xpath: "product/manufacturedProduct/manufacturedMaterial/code/@displayName"
+    fallback_xpath: "participant/participantRole/playingDevice/code/@displayName"
+    transform: string
+  - target: unique_device_id
+    xpath: "participant/participantRole/id/@extension"
+    transform: string
+    optional: true
+id_gen:
+  base_fields:
+    - Code.Code
+    - EffectiveTime.Low
+  generator: device
