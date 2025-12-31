@@ -16,7 +16,7 @@ def fixtures_dir() -> Path:
 @pytest.fixture
 def sample_ccda_file(fixtures_dir: Path) -> Path:
     """Return path to sample C-CDA XML file."""
-    return fixtures_dir / "sample_ccda.xml"
+    return fixtures_dir / "sample.xml"
 
 
 @pytest.fixture
