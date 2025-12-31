@@ -63,11 +63,8 @@ class RuleEngine:
         # Get concept IDs (may be multiple for multi-mapping)
         concept_ids = self._extract_concept_ids(rule, entry, entries_required)
         if not concept_ids:
-            # Try to get at least concept_id=0 if entries aren't required
-            if not entries_required:
-                concept_ids = [0]
-            else:
-                return []
+            # Fall back to concept_id=0 when no mapping found (matches Go behavior)
+            concept_ids = [0]
 
         # Check conditions
         if rule.source.conditions:
@@ -129,9 +126,8 @@ class RuleEngine:
                     if ids:
                         return ids
 
-                # If no mapping found, return 0 if entries not required
-                if not entries_required:
-                    return [0]
+                # Code found but no mapping - return [0] (matches Go behavior)
+                return [0]
 
         return []
 
@@ -240,9 +236,13 @@ class RuleEngine:
 
         if fm.transform == "date":
             dt = extractor.extract_time(entry, fm.xpath)
+            if dt is None and fm.fallback_xpath:
+                dt = extractor.extract_time(entry, fm.fallback_xpath)
             return transform(dt)
         elif fm.transform == "time_ptr":
             dt = extractor.extract_time(entry, fm.xpath)
+            if dt is None and fm.fallback_xpath:
+                dt = extractor.extract_time(entry, fm.fallback_xpath)
             return transform(dt)
         elif fm.transform == "float":
             return transform(raw)
